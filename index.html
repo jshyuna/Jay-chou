@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .itemArea{
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 100px 0 0 450px;
+        }
+        .pic{
+            width: 100%;
+            height: 100%;
+        }
+        .pic img{
+            width: 100%;
+            height: 100%;
+        }
+        /* 遮罩层 */
+        .cover{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 150px;
+            height: 150px;
+            background-image: url(ge.jpg);
+            background-size: 3px;
+            opacity: 0.5;
+            display: none;
+        }
+        /* 右侧放大图片 */
+        .detail{
+            position: absolute;
+            left: 400px;
+            top:0;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+        }
+        .detail img{
+            display: none;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="itemArea">
+        <div class="pic">
+            <img src="pic.jpg" alt="">
+            <div class="cover"></div>
+        </div>
+        <div class="detail">
+            <img src="pic.jpg" alt="">
+        </div>
+    </div>
+    <script>
+        let pic = document.querySelector(".pic");
+        let cover = document.querySelector(".cover");
+
+        let detail = document.querySelector(".detail");
+        let detailImg = document.querySelector(".detail img");
+
+        // 鼠标进入左侧图片时显示遮罩层和右侧图片
+        pic.addEventListener("mouseenter",function(){
+            cover.style.display  = "block";
+            detailImg.style.display = "block";
+        });
+        // 鼠标离开左侧图片时 隐藏遮罩层和右侧图片
+        pic.addEventListener("mouseleave",function(){
+            cover.style.display  = "none";
+            detailImg.style.display = "none";
+        });
+
+        // 鼠标在左侧图片中移动事件
+        pic.addEventListener("mousemove", function(e){
+            // 鼠标的坐标
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // 左侧图片的坐标
+            let left = pic.getBoundingClientRect().left;
+            let top = pic.getBoundingClientRect().top;
+
+            // 遮罩层在图片上的偏移量
+            let cLeft = x - left - cover.offsetWidth/2;
+            let cTop = y - top - cover.offsetHeight/2;
+
+            // 判断遮罩层偏移量的临界值
+            let leftMax = pic.offsetWidth - cover.offsetWidth;
+            let topMax = pic.offsetHeight - cover.offsetHeight;
+
+            if(cLeft<0){
+                cLeft = 0;
+            }
+            if(cLeft > leftMax){
+                cLeft = leftMax;
+            }
+
+            if(cTop<0){
+                cTop = 0;
+            }
+            if(cTop > topMax){
+                cTop = topMax;
+            }
+
+            // 遮罩层位置
+            cover.style.left = cLeft + "px";
+            cover.style.top = cTop + "px";
+
+            // 显示右侧放大的图片
+            // detailImg.left/(detailImg.width - detail.width) = cover.left/(pic.width - cover.width)
+            let detailImgLeft = (detailImg.offsetWidth - detail.offsetWidth)*cLeft/(pic.offsetWidth - cover.offsetWidth);
+            let detailImgTop = (detailImg.offsetHeight- detail.offsetHeight)*cTop/(pic.offsetHeight - cover.offsetHeight);
+            
+            detailImg.style.left = "-"+detailImgLeft + "px";
+            detailImg.style.top = "-" + detailImgTop + "px";
+        
+        });
+    </script>
+</body>
+</html>
